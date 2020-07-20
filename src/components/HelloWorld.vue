@@ -432,39 +432,43 @@
             },
             //判断滚动方向
             handleScroll(e) {
+                let event = e || window.event;   //获取鼠标位置
+                let x = event.offsetX;
+                let y = event.offsetY;
                 let direction = e.deltaY > 0 ? 'down' : 'up'
                 if (direction == 'down') {
                     if (document.getElementById("imgId").offsetWidth > 800) {
-                        this.narrow(direction)
+                        this.narrow(direction, x, y)
                     }
                 }
                 if (direction === 'up') {
-                    this.boost(direction)
+                    this.boost(direction, x, y)
                 }
             },
-            boost(item) {   //放大
-                this.change(item)
+            boost(item, x, y) {   //放大
+                this.change(item, x, y)
             },
-            narrow(item) {  //缩小
-                this.change(item)
+            narrow(item, x, y) {  //缩小
+                this.change(item, x, y)
             },
-            change(item) {  //改变大小
+            change(item, x, y) {  //改变大小
+                console.log(x,y)
                 let oImg = document.getElementById("imgId");
                 let primaryWSize = this.list[1];                  //图片原始大小
                 let primaryHSize = this.list[2];
                 let s = primaryWSize / primaryHSize;               //宽高比
                 let nowWSize = this.wSize || oImg.offsetWidth;   //图片目前大小
-                // let nowHSize = this.hSize || oImg.offsetHeight;
+                let nowHSize = this.hSize || oImg.offsetHeight;
                 if (item === "up") {
+                    console.log(x,y)
                     this.wSize = nowWSize + 10;                      //放大图片
-                    this.left += 5
-                    this.top += 5 / s
+                        this.left += x * 10 / nowWSize               //移动图片
+                        this.top += y * 10 / nowHSize / s
                 }
                 if (item === "down") {
                     this.wSize = nowWSize - 10;                      //缩小图片
-                    this.left -= 5
-                    this.top -= 5 / s
-
+                    this.left -= x * 10 / nowWSize                   //移动图片
+                    this.top -= y * 10 / nowHSize / s
                 }
                 this.hSize = this.wSize / s;
                 this.proportion = this.wSize / primaryWSize;    //改变缩放比例
@@ -485,14 +489,16 @@
 
     .hellowWorld {
         position: relative;
+        left:0;
     }
 
     .wrapper {
         position: absolute;
         transform: translate(20%);
-        transform-origin: center center;
         width: 973px;
         height: 671px;
+        /*border: 1px solid #000;*/
+        /*overflow: hidden;*/
     }
 
     img {
